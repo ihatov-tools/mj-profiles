@@ -1,0 +1,375 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="プロファイル帖">
+<meta name="theme-color" content="#fbf6ec"><meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' blob: data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; worker-src 'self'; manifest-src 'self'">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" href="icon-192.png">
+<title>プロファイル帖</title>
+<style>
+:root{--bg:#fbf6ec;--card:#fffdf8;--line:#eadfca;--ink:#5b4a3a;--sub:#a3917b;--acc:#c98a5a;--acc2:#e9c9a8;--star:#e0a93b;--ok:#7f9a6a;--danger:#c4685a;
+--sb:env(safe-area-inset-bottom);--st:env(safe-area-inset-top)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif}
+body{padding:calc(var(--st) + 6px) 12px calc(var(--sb) + 92px);background-image:radial-gradient(#efe4cf 1px,transparent 1px);background-size:22px 22px}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+input,textarea,select{font:16px/1.4 inherit;font-family:inherit;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;width:100%;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--acc)}
+textarea{min-height:70px;resize:vertical}
+h1{font-size:19px;margin:4px 2px 8px;letter-spacing:.05em;display:flex;align-items:center;gap:6px}
+h1 small{font-size:11px;color:var(--sub);font-weight:400;margin-left:auto}
+.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:6px 0 6px;margin:0 -12px;padding-left:12px;padding-right:12px;padding-top:calc(var(--st) + 6px);margin-top:calc(-1 * var(--st) - 6px)}
+.row{display:flex;gap:8px;align-items:center}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:8px 0 2px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:6px 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);font-size:13px;white-space:nowrap}
+.chip.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.banner{background:#fff4e2;border:1.5px dashed var(--acc2);border-radius:14px;padding:10px 12px;margin:8px 0;font-size:13px;display:flex;gap:8px;align-items:center}
+.banner b{color:var(--acc)}
+.banner button{margin-left:auto;background:var(--acc);color:#fff;border-radius:10px;padding:6px 10px;font-size:13px;flex:none}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:18px;margin:10px 0;display:flex;gap:10px;padding:10px;box-shadow:0 2px 0 #efe3cc}
+.thumb{width:84px;height:84px;border-radius:12px;background:#f3ead9 center/cover no-repeat;flex:none;display:flex;align-items:center;justify-content:center;font-size:28px;color:#d8c6a8}
+.cbody{flex:1;min-width:0}
+.cname{font-weight:700;font-size:16px;display:flex;gap:6px;align-items:center}
+.cname span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.code{font:12.5px/1.4 ui-monospace,Menlo,monospace;color:var(--acc);word-break:break-all;margin:2px 0}
+.desc{font-size:13px;color:var(--sub);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.tag{font-size:11px;background:#f5ecdc;border-radius:8px;padding:1px 7px;color:#8a765f}
+.cside{display:flex;flex-direction:column;justify-content:space-between;align-items:center;gap:6px}
+.star{font-size:22px;width:40px;height:40px;color:#d9ccb6}.star.on{color:var(--star)}
+.cp{background:var(--acc);color:#fff;border-radius:12px;width:56px;height:44px;font-size:12px;font-weight:700;white-space:nowrap}
+.empty{text-align:center;color:var(--sub);padding:50px 10px;font-size:14px}
+.empty .big{font-size:44px}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:10;display:flex;gap:10px;padding:10px 14px calc(var(--sb) + 10px);background:linear-gradient(transparent,var(--bg) 30%)}
+.bar button{flex:1;height:54px;border-radius:18px;background:var(--card);border:1.5px solid var(--line);font-size:13px;white-space:nowrap;padding:0 4px}
+.bar .main{flex:1.4;background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700;font-size:16px}
+.bar .on{background:#fff2d9;border-color:var(--star)}
+.sheet{position:fixed;inset:0;z-index:20;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(var(--st) + 10px) 14px calc(var(--sb) + 100px);display:none}
+.sheet.open{display:block}
+.sheet h2{font-size:18px;margin:4px 0 12px}
+.lbl{font-size:12px;color:var(--sub);margin:14px 2px 4px;display:block}
+.part{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:8px;margin-bottom:8px}
+.part .row+.row{margin-top:6px}
+.part select{width:92px;flex:none;padding:10px 6px}
+.wbtn{width:44px;height:44px;flex:none;border-radius:12px;background:#f5ecdc;font-size:20px}
+.part input.w{text-align:center;width:72px;flex:none}
+.part input[type=range]{flex:1;accent-color:var(--acc);padding:0;border:0;background:none;height:32px}
+.xbtn{width:40px;height:40px;flex:none;color:var(--danger);font-size:18px}
+.btn{display:block;width:100%;padding:12px;border-radius:14px;background:var(--card);border:1.5px dashed var(--acc2);color:var(--acc);font-size:14px;margin-top:6px}
+.btn.solid{background:var(--acc);color:#fff;border:0;font-weight:700}
+.btn.danger{color:var(--danger);border-color:#ecc4bc}
+.preview{font:13px/1.5 ui-monospace,Menlo,monospace;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:10px;word-break:break-all;color:var(--acc);min-height:42px}
+.note{font-size:12px;color:var(--sub);margin:4px 2px}
+.imgs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.imgs .im{position:relative;aspect-ratio:1;border-radius:12px;background:#f3ead9 center/cover no-repeat}
+.imgs .im button{position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:50%;background:rgba(255,253,248,.92);color:var(--danger);font-size:14px}
+.imgs .im .first{position:absolute;left:4px;bottom:4px;font-size:10px;background:var(--acc);color:#fff;border-radius:6px;padding:0 5px}
+.addimg{aspect-ratio:1;border-radius:12px;border:1.5px dashed var(--acc2);display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--acc);font-size:12px}
+.addimg b{font-size:26px;font-weight:400}
+.sbar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:10px;padding:10px 14px calc(var(--sb) + 10px);background:linear-gradient(transparent,var(--bg) 25%);z-index:21}
+.sbar button{flex:1;height:54px;border-radius:18px;background:var(--card);border:1.5px solid var(--line);font-size:15px}
+.sbar .main{flex:1.6;background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.gallery{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -14px;padding:0 14px 6px}
+.gallery div{flex:none;width:78%;aspect-ratio:4/5;border-radius:16px;background:#f3ead9 center/cover no-repeat;scroll-snap-align:center}
+.bigcopy{width:100%;margin:12px 0 4px;padding:14px;border-radius:16px;background:var(--acc);color:#fff;font-weight:700;font-size:16px}
+.kv{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;margin-top:10px;font-size:14px;white-space:pre-wrap;word-break:break-word}
+.kv .k{font-size:11px;color:var(--sub);display:block}
+.kv a{color:var(--acc)}
+.plist div{display:flex;justify-content:space-between;font:13px ui-monospace,Menlo,monospace;padding:3px 0;border-bottom:1px dotted var(--line)}
+.plist div:last-child{border:0}
+.lb{position:fixed;inset:0;z-index:40;background:rgba(60,48,36,.92);display:none;flex-direction:column;align-items:center;justify-content:center;padding:calc(var(--st) + 10px) 10px calc(var(--sb) + 10px)}
+.lb.open{display:flex}
+.lb img{max-width:100%;max-height:68vh;border-radius:12px}
+.lb .row{margin-top:12px;flex-wrap:wrap;justify-content:center}
+.lb button,.lb a{background:var(--card);border-radius:12px;padding:10px 14px;font-size:14px;color:var(--ink);text-decoration:none}
+#toast{position:fixed;left:50%;bottom:calc(var(--sb) + 90px);transform:translateX(-50%) translateY(10px);background:var(--ink);color:#fff;padding:9px 16px;border-radius:14px;opacity:0;transition:.25s;z-index:60;font-size:14px;pointer-events:none;max-width:90%;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%)}
+.sugg{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.sugg .chip{padding:5px 10px}
+.small{font-size:12px;color:var(--sub)}
+#err{display:none;position:fixed;top:0;left:0;right:0;z-index:99;color:#fff;background:var(--danger);padding:10px;white-space:pre-wrap;font-size:12px}
+.radio{display:flex;gap:8px}.radio label{flex:1;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:10px;font-size:14px;display:flex;gap:6px;align-items:center}
+</style></head><body>
+<div id="err"></div>
+<div class="top">
+  <h1>📜 プロファイル帖 <small id="count"></small></h1>
+  <div class="row"><input id="q" type="search" placeholder="🔍 名前・コード・メモで探す" autocomplete="off">
+  <select id="sort" style="width:112px;flex:none"><option value="upd">更新が新しい</option><option value="new">登録が新しい</option><option value="old">登録が古い</option><option value="name">名前順</option><option value="fav">⭐を先に</option></select></div>
+  <div class="chips" id="tagbar"></div>
+</div>
+<div id="banner"></div>
+<div id="list"></div>
+<div class="bar">
+  <button id="bFav">☆ お気に入り</button>
+  <button id="bAdd" class="main">＋ 新しく登録</button>
+  <button id="bBak">💾 保存・復元</button>
+</div>
+
+<!-- detail -->
+<div class="sheet" id="sDetail"><div id="detail"></div>
+<div class="sbar"><button id="dClose">← もどる</button><button id="dEdit">✏️ 編集</button><button id="dCopy" class="main">📋 コピー</button></div></div>
+
+<!-- edit -->
+<div class="sheet" id="sEdit">
+<h2 id="eTitle">新しく登録</h2>
+<label class="lbl">名前</label><input id="eName" placeholder="例：寓話のやわらか水彩">
+<label class="lbl">まとめて貼り付け（プロンプトの後ろをそのまま貼ると自動で分けます）</label>
+<div class="row"><input id="ePaste" placeholder="--p abc123::0.7 def456::0.3 --s 250"><button class="wbtn" id="eParse" style="width:auto;padding:0 12px;font-size:14px">読み取る</button></div>
+<label class="lbl">コードとウェイト</label>
+<div id="eParts"></div>
+<button class="btn" id="eAddPart">＋ コードを追加</button>
+<p class="note">ウェイトは同じ --p（または --sref）の中での比率です。0 にすると一時的に外れます。コードが1つだけのときはウェイトは付けません（効きの強さは --s で調整）。</p>
+<label class="lbl">いっしょに付けるパラメータ（任意）</label><input id="eExtra" placeholder="--s 250 --v 7 --ar 4:5" autocapitalize="off" autocorrect="off" spellcheck="false">
+<label class="lbl">コピーされる文字列</label><div class="preview" id="ePrev"></div>
+<label class="lbl">対応バージョン（メモ用）</label>
+<select id="eVer"><option value="">指定なし</option><option>V6</option><option>V7</option><option>V8</option><option>niji</option></select>
+<label class="lbl">どんな絵になる？</label><textarea id="eDesc" placeholder="例：クリーム色の余白、絵本っぽい線、動物が大きめに出る"></textarea>
+<label class="lbl">タグ（タップで付け外し）</label>
+<div class="sugg" id="eTags"></div>
+<div class="row" style="margin-top:6px"><input id="eNewTag" placeholder="新しいタグ"><button class="wbtn" id="eAddTag" style="width:auto;padding:0 14px;font-size:14px">追加</button></div>
+<label class="lbl">見本の画像（1枚目が代表になります）</label>
+<div class="imgs" id="eImgs"></div>
+<input type="file" id="eFile" accept="image/*" multiple hidden>
+<p class="note">取り込むときに幅400pxの軽い画像に縮めて、この端末の中だけに保存します。</p>
+<label class="lbl">元画像のリンク（Tumblr・Midjourneyなど、任意）</label><input id="eLink" type="url" placeholder="https://" autocapitalize="off">
+<label class="lbl">メモ</label><textarea id="eMemo" placeholder="例：--s 300 以上だと線が太くなる"></textarea>
+<label class="lbl" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="eFav" style="width:22px;height:22px"> ⭐ お気に入りにする</label>
+<div id="eDanger"></div>
+<div class="sbar"><button id="eCancel">やめる</button><button id="eSave" class="main">保存する</button></div>
+</div>
+
+<!-- backup -->
+<div class="sheet" id="sBak">
+<h2>💾 バックアップ</h2>
+<div class="kv" id="bInfo"></div>
+<button class="btn solid" id="bExport" style="margin-top:14px">⬇️ 全部を書き出す（画像も入ります）</button>
+<p class="note">書き出したファイルは「ファイル」アプリやiCloud Driveに保存しておくと、iPhoneを替えたときやデータが消えたときに戻せます。こまめに書き出すのがおすすめです。</p>
+<label class="lbl">読み込み方</label>
+<div class="radio"><label><input type="radio" name="imode" value="merge" checked style="width:auto"> 足す（同じ物は新しい方）</label><label><input type="radio" name="imode" value="replace" style="width:auto"> 全部入れ替える</label></div>
+<button class="btn" id="bImport">⬆️ バックアップファイルを読み込む</button>
+<input type="file" id="bFile" accept="application/json,.json" hidden>
+<p class="note">データはこのiPhoneの中（ブラウザの保存領域）にだけあります。どこにも送信していません。<br>※ ホーム画面に追加したアプリと、Safariで開いたページは保存場所が別です。いつもホーム画面のアイコンから開いてください。</p>
+<div class="sbar"><button id="bClose" class="main">← もどる</button></div>
+</div>
+
+<div class="lb" id="lb"><img id="lbImg" alt=""><div class="row" id="lbBtns"></div></div>
+<div id="toast"></div>
+
+<script>
+window.onerror=function(m,u,l){var e=document.getElementById('err');e.style.display='block';e.textContent+='エラー: '+m+' (行'+l+')\n'};
+window.onunhandledrejection=function(ev){var e=document.getElementById('err');e.style.display='block';e.textContent+='エラー: '+(ev.reason&&ev.reason.message||ev.reason)+'\n'};
+</script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const PRESET=['寓話','セミリアル','ジオラマ','食べもの','動物','水彩','やわらか','ビビッド','夜','季節'];
+const fmtW=w=>String(Math.round(w*100)/100);
+const fmtD=t=>{if(!t)return'—';const d=new Date(t);return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),1600)}
+
+/* ---------- IndexedDB ---------- */
+let db;
+const rq=r=>new Promise((res,rej)=>{r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open('mj-profiles',1);
+r.onupgradeneeded=()=>{const d=r.result;d.createObjectStore('entries',{keyPath:'id'});const s=d.createObjectStore('images',{keyPath:'id'});s.createIndex('entry','entryId');d.createObjectStore('meta',{keyPath:'k'})};
+r.onsuccess=()=>res(db=r.result);r.onerror=()=>rej(r.error)})}
+const st=(n,m)=>db.transaction(n,m||'readonly').objectStore(n);
+const dbAll=n=>rq(st(n).getAll());
+const dbGet=(n,k)=>rq(st(n).get(k));
+const dbPut=(n,v)=>rq(st(n,'readwrite').put(v));
+const dbDel=(n,k)=>rq(st(n,'readwrite').delete(k));
+function dbTx(names,fn){return new Promise((res,rej)=>{const t=db.transaction(names,'readwrite');fn(t);t.oncomplete=()=>res();t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error||new Error('保存に失敗しました（容量不足かも）'))})}
+const meta=async k=>{const r=await dbGet('meta',k);return r?r.v:null};
+const setMeta=(k,v)=>dbPut('meta',{k,v});
+async function touched(){await setMeta('lastChange',Date.now());if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{})}
+
+/* ---------- state ---------- */
+let entries=[],selTags=new Set(),favOnly=false,curId=null;
+const urlCache=new Map();
+async function imgURL(id){if(urlCache.has(id))return urlCache.get(id);const r=await dbGet('images',id);if(!r)return null;const u=URL.createObjectURL(r.blob);urlCache.set(id,u);return u}
+function dropURL(id){const u=urlCache.get(id);if(u){URL.revokeObjectURL(u);urlCache.delete(id)}}
+
+/* ---------- parameter string ---------- */
+// Midjourney: --p code1::w1 code2::w2 (weights are relative inside one --p; default 1). Same for --sref.
+function paramStr(e){const out=[];
+for(const k of['p','sref']){const ps=(e.parts||[]).filter(x=>x.kind===k&&String(x.code).trim()&&Number(x.w)>0);if(!ps.length)continue;
+const single=ps.length===1;out.push('--'+k+' '+ps.map(x=>{const c=String(x.code).trim();return single||Number(x.w)===1?c:c+'::'+fmtW(Number(x.w))}).join(' '))}
+if(e.extra&&e.extra.trim())out.push(e.extra.trim().replace(/\s+/g,' '));return out.join(' ')}
+function parseParams(s){const parts=[],extra=[];const toks=String(s).replace(/[—–]{1}/g,'--').trim().split(/\s+/).filter(Boolean);let kind=null,inExtra=false;
+for(const t of toks){const low=t.toLowerCase();
+if(low==='--p'||low==='--profile'||low==='--personalize'){kind='p';inExtra=false;continue}
+if(low==='--sref'){kind='sref';inExtra=false;continue}
+if(t.startsWith('--')){kind=null;inExtra=true;extra.push(t);continue}
+if(kind){const m=t.split('::');const w=m.length>1&&m[1]!==''?parseFloat(m[1]):1;parts.push({kind,code:m[0],w:isNaN(w)?1:w});continue}
+if(inExtra)extra.push(t);else if(!kind&&!parts.length&&/^[\w-]+(::[\d.]+)?$/.test(t)){const m=t.split('::');parts.push({kind:'p',code:m[0],w:m[1]?parseFloat(m[1]):1})}}
+return{parts,extra:extra.join(' ')}}
+
+async function copyText(t){if(!t){toast('コードがまだありません');return}
+try{await navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;a.setAttribute('readonly','');a.style.position='fixed';a.style.opacity='0';document.body.append(a);a.select();a.setSelectionRange(0,t.length);document.execCommand('copy');a.remove()}
+toast('コピーしました：'+(t.length>40?t.slice(0,40)+'…':t))}
+
+/* ---------- list ---------- */
+async function load(){entries=await dbAll('entries');render();banner()}
+function allTags(){const m=new Map();PRESET.forEach(t=>m.set(t,0));entries.forEach(e=>(e.tags||[]).forEach(t=>m.set(t,(m.get(t)||0)+1)));return[...m.entries()].filter(([t,n])=>n>0||selTags.has(t)).sort((a,b)=>b[1]-a[1]).map(x=>x[0])}
+function render(){
+const tb=$('tagbar');const tags=allTags();tb.innerHTML=(tags.length?'<button class="chip'+(selTags.size?'':' on')+'" data-all>すべて</button>':'')+tags.map(t=>'<button class="chip'+(selTags.has(t)?' on':'')+'" data-tag="'+esc(t)+'">#'+esc(t)+'</button>').join('');
+const q=$('q').value.trim().toLowerCase();
+let list=entries.filter(e=>{if(favOnly&&!e.fav)return false;for(const t of selTags)if(!(e.tags||[]).includes(t))return false;
+if(q){const hay=[e.name,e.desc,e.memo,e.extra,e.ver,(e.tags||[]).join(' '),(e.parts||[]).map(p=>p.code).join(' ')].join(' ').toLowerCase();return q.split(/\s+/).every(w=>hay.includes(w))}return true});
+const s=$('sort').value;
+list.sort((a,b)=>s==='new'?b.created-a.created:s==='old'?a.created-b.created:s==='name'?String(a.name).localeCompare(String(b.name),'ja'):s==='fav'?(b.fav-a.fav)||(b.updated-a.updated):b.updated-a.updated);
+$('count').textContent=list.length===entries.length?entries.length+'件':list.length+' / '+entries.length+'件';
+$('bFav').classList.toggle('on',favOnly);$('bFav').textContent=favOnly?'⭐ だけ表示':'☆ お気に入り';
+const L=$('list');
+if(!entries.length){L.innerHTML='<div class="empty"><div class="big">🕯️</div>まだ何も登録されていません。<br>下の「＋ 新しく登録」から<br>最初のプロファイルを書き込みましょう。</div>';return}
+if(!list.length){L.innerHTML='<div class="empty"><div class="big">🍂</div>見つかりませんでした。</div>';return}
+L.innerHTML=list.map(e=>'<div class="card" data-id="'+esc(e.id)+'"><div class="thumb" data-img="'+esc((e.imgs||[])[0]||'')+'">'+((e.imgs||[]).length?'':'🖼')+'</div><div class="cbody"><div class="cname"><span>'+esc(e.name||'（名前なし）')+'</span></div><div class="code">'+esc(paramStr(e)||'（コード未入力）')+'</div><div class="desc">'+esc(e.desc||'')+'</div><div class="tags">'+(e.tags||[]).map(t=>'<span class="tag">#'+esc(t)+'</span>').join('')+'</div></div><div class="cside"><button class="star'+(e.fav?' on':'')+'" data-star aria-label="お気に入り">'+(e.fav?'★':'☆')+'</button><button class="cp" data-copy>コピー</button></div></div>').join('');
+L.querySelectorAll('.thumb[data-img]').forEach(async el=>{const id=el.dataset.img;if(!id)return;const u=await imgURL(id);if(u)el.style.backgroundImage='url("'+u+'")'})}
+$('tagbar').onclick=ev=>{const b=ev.target.closest('.chip');if(!b)return;if(b.hasAttribute('data-all'))selTags.clear();else{const t=b.dataset.tag;selTags.has(t)?selTags.delete(t):selTags.add(t)}render()};
+$('list').onclick=async ev=>{const c=ev.target.closest('.card');if(!c)return;const e=entries.find(x=>x.id===c.dataset.id);if(!e)return;
+if(ev.target.closest('[data-copy]')){copyText(paramStr(e));return}
+if(ev.target.closest('[data-star]')){e.fav=!e.fav;await dbPut('entries',e);await touched();render();return}
+openDetail(e.id)};
+$('q').oninput=render;$('sort').onchange=()=>{render();setMeta('sort',$('sort').value)};
+$('bFav').onclick=()=>{favOnly=!favOnly;render()};
+
+/* ---------- backup reminder ---------- */
+async function banner(){const B=$('banner');if(!entries.length){B.innerHTML='';return}
+const le=await meta('lastExport'),lc=await meta('lastChange');const days=le?Math.floor((Date.now()-le)/864e5):null;
+let msg='';if(!le)msg='まだ一度も<b>バックアップ</b>していません。';else if(lc>le&&days>=7)msg='前回のバックアップから<b>'+days+'日</b>。変更があります。';
+B.innerHTML=msg?'<div class="banner">💾 <span>'+msg+'</span><button id="bnGo">書き出す</button></div>':'';
+if(msg)$('bnGo').onclick=exportAll}
+
+/* ---------- detail ---------- */
+function openSheet(id){$(id).classList.add('open');$(id).scrollTop=0}
+function closeSheet(id){$(id).classList.remove('open')}
+async function openDetail(id){curId=id;const e=entries.find(x=>x.id===id);if(!e)return;
+const ps=(e.parts||[]);
+$('detail').innerHTML='<h2>'+(e.fav?'⭐ ':'')+esc(e.name||'（名前なし）')+'</h2>'+
+((e.imgs||[]).length?'<div class="gallery">'+e.imgs.map(i=>'<div data-img="'+esc(i)+'"></div>').join('')+'</div>':'')+
+'<button class="bigcopy" id="dCopy2">📋 '+esc(paramStr(e)||'（コード未入力）')+'</button>'+
+(ps.length?'<div class="kv"><span class="k">コードとウェイト</span><div class="plist">'+ps.map(p=>'<div><span>--'+esc(p.kind)+' '+esc(p.code)+'</span><span>'+(Number(p.w)>0?'× '+fmtW(Number(p.w)):'（外し中）')+'</span></div>').join('')+'</div></div>':'')+
+(e.desc?'<div class="kv"><span class="k">どんな絵になる？</span>'+esc(e.desc)+'</div>':'')+
+((e.tags||[]).length?'<div class="kv"><span class="k">タグ</span><div class="tags">'+e.tags.map(t=>'<span class="tag">#'+esc(t)+'</span>').join('')+'</div></div>':'')+
+(e.ver?'<div class="kv"><span class="k">バージョン</span>'+esc(e.ver)+'</div>':'')+
+(e.link?'<div class="kv"><span class="k">元画像</span><a href="'+esc(safeURL(e.link))+'" target="_blank" rel="noopener noreferrer">'+esc(e.link)+'</a></div>':'')+
+(e.memo?'<div class="kv"><span class="k">メモ</span>'+esc(e.memo)+'</div>':'')+
+'<div class="kv small">登録 '+fmtD(e.created)+'　更新 '+fmtD(e.updated)+'</div>'+
+'<button class="btn" id="dDup">🧪 複製してウェイトを調整</button>';
+$('detail').querySelectorAll('[data-img]').forEach(async el=>{const u=await imgURL(el.dataset.img);if(u)el.style.backgroundImage='url("'+u+'")';el.onclick=()=>openLB(el.dataset.img,e)});
+$('dCopy2').onclick=()=>copyText(paramStr(e));$('dDup').onclick=()=>duplicate(e);
+openSheet('sDetail')}
+function safeURL(u){u=String(u||'').trim();return /^https?:\/\//i.test(u)?u:'#'}
+$('dClose').onclick=()=>{closeSheet('sDetail');render()};
+$('dCopy').onclick=()=>{const e=entries.find(x=>x.id===curId);if(e)copyText(paramStr(e))};
+$('dEdit').onclick=()=>openEdit(curId);
+async function duplicate(e){const n=JSON.parse(JSON.stringify(e));n.id=uid();n.name=(e.name||'')+'（調整）';n.created=n.updated=Date.now();n.imgs=[];
+for(const iid of e.imgs||[]){const r=await dbGet('images',iid);if(r){const nid=uid();await dbPut('images',Object.assign({},r,{id:nid,entryId:n.id}));n.imgs.push(nid)}}
+await dbPut('entries',n);await touched();entries.push(n);closeSheet('sDetail');openEdit(n.id);toast('複製しました')}
+
+/* lightbox */
+async function openLB(iid,e){const r=await dbGet('images',iid);if(!r)return;$('lbImg').src=await imgURL(iid);
+const B=$('lbBtns');B.innerHTML=(r.link?'<a href="'+esc(safeURL(r.link))+'" target="_blank" rel="noopener noreferrer">🔗 元画像</a>':'')+'<button id="lbLink">リンクを'+(r.link?'変える':'付ける')+'</button>'+((e.imgs||[])[0]!==iid?'<button id="lbFirst">代表にする</button>':'')+'<button id="lbClose">とじる</button>';
+$('lbClose').onclick=()=>$('lb').classList.remove('open');
+$('lbLink').onclick=async()=>{const v=prompt('この画像の元のURL（Tumblr・Midjourneyなど）',r.link||'');if(v===null)return;r.link=v.trim();await dbPut('images',r);await touched();openLB(iid,e);toast('保存しました')};
+if($('lbFirst'))$('lbFirst').onclick=async()=>{e.imgs=[iid,...e.imgs.filter(x=>x!==iid)];e.updated=Date.now();await dbPut('entries',e);await touched();$('lb').classList.remove('open');openDetail(e.id);toast('代表にしました')};
+$('lb').classList.add('open')}
+$('lb').onclick=ev=>{if(ev.target.id==='lb')$('lb').classList.remove('open')};
+
+/* ---------- edit ---------- */
+let draft=null,pendingImgs=[],removedImgs=[];
+async function openEdit(id){const e=id?entries.find(x=>x.id===id):null;
+draft=e?JSON.parse(JSON.stringify(e)):{id:uid(),name:'',parts:[{kind:'p',code:'',w:1}],extra:'',ver:'',desc:'',tags:[],fav:false,link:'',memo:'',imgs:[],created:0,updated:0};
+pendingImgs=[];removedImgs=[];
+$('eTitle').textContent=e?'編集':'新しく登録';
+$('eName').value=draft.name;$('ePaste').value='';$('eExtra').value=draft.extra||'';$('eVer').value=draft.ver||'';$('eDesc').value=draft.desc||'';$('eLink').value=draft.link||'';$('eMemo').value=draft.memo||'';$('eFav').checked=!!draft.fav;
+$('eDanger').innerHTML=e?'<button class="btn danger" id="eDel" style="margin-top:20px">🗑 この登録を削除</button>':'';
+if(e)$('eDel').onclick=()=>delEntry(e.id);
+drawParts();drawTags();drawImgs();openSheet('sEdit')}
+function drawParts(){const P=$('eParts');P.innerHTML=draft.parts.map((p,i)=>'<div class="part" data-i="'+i+'"><div class="row"><select data-f="kind"><option value="p"'+(p.kind==='p'?' selected':'')+'>--p</option><option value="sref"'+(p.kind==='sref'?' selected':'')+'>--sref</option></select><input data-f="code" value="'+esc(p.code)+'" placeholder="コード（例 abc123）" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="xbtn" data-x aria-label="削除">✕</button></div><div class="row"><button class="wbtn" data-d="-1">−</button><input type="range" data-f="wr" min="0" max="2" step="0.1" value="'+Math.min(2,p.w)+'"><button class="wbtn" data-d="1">＋</button><input class="w" data-f="w" type="number" inputmode="decimal" min="0" max="10" step="0.1" value="'+fmtW(p.w)+'"></div></div>').join('');prev()}
+function prev(){draft.extra=$('eExtra').value;$('ePrev').textContent=paramStr(draft)||'（コードを入れるとここに出ます）'}
+$('eParts').oninput=ev=>{const d=ev.target.closest('.part');if(!d)return;const p=draft.parts[+d.dataset.i],f=ev.target.dataset.f;
+if(f==='code')p.code=ev.target.value.trim();else if(f==='kind')p.kind=ev.target.value;
+else if(f==='wr'){p.w=Math.round(parseFloat(ev.target.value)*10)/10;d.querySelector('[data-f=w]').value=fmtW(p.w)}
+else if(f==='w'){const v=parseFloat(ev.target.value);p.w=isNaN(v)?0:Math.max(0,Math.min(10,v));d.querySelector('[data-f=wr]').value=Math.min(2,p.w)}prev()};
+$('eParts').onchange=$('eParts').oninput;
+$('eParts').onclick=ev=>{const d=ev.target.closest('.part');if(!d)return;const i=+d.dataset.i,p=draft.parts[i];
+if(ev.target.closest('[data-x]')){draft.parts.splice(i,1);drawParts();return}
+const b=ev.target.closest('[data-d]');if(b){p.w=Math.max(0,Math.min(10,Math.round((p.w+0.1*b.dataset.d)*10)/10));d.querySelector('[data-f=w]').value=fmtW(p.w);d.querySelector('[data-f=wr]').value=Math.min(2,p.w);prev()}};
+$('eAddPart').onclick=()=>{draft.parts.push({kind:'p',code:'',w:1});drawParts()};
+$('eExtra').oninput=prev;
+$('eParse').onclick=()=>{const r=parseParams($('ePaste').value);if(!r.parts.length&&!r.extra){toast('読み取れませんでした');return}
+if(r.parts.length)draft.parts=r.parts;if(r.extra)$('eExtra').value=r.extra;$('ePaste').value='';drawParts();toast(r.parts.length+'個のコードを読み取りました')};
+function drawTags(){const tags=[...new Set([...PRESET,...entries.flatMap(e=>e.tags||[]),...draft.tags])];
+$('eTags').innerHTML=tags.map(t=>'<button class="chip'+(draft.tags.includes(t)?' on':'')+'" data-t="'+esc(t)+'">#'+esc(t)+'</button>').join('')}
+$('eTags').onclick=ev=>{const b=ev.target.closest('[data-t]');if(!b)return;const t=b.dataset.t;draft.tags=draft.tags.includes(t)?draft.tags.filter(x=>x!==t):[...draft.tags,t];drawTags()};
+$('eAddTag').onclick=()=>{const t=$('eNewTag').value.trim().replace(/^#/,'');if(!t)return;if(!draft.tags.includes(t))draft.tags.push(t);$('eNewTag').value='';drawTags()};
+$('eNewTag').onkeydown=ev=>{if(ev.key==='Enter'){ev.preventDefault();$('eAddTag').click()}};
+async function drawImgs(){const I=$('eImgs');const items=[...draft.imgs.map(id=>({id,saved:true})),...pendingImgs.map(p=>({id:p.id,url:p.url}))];
+I.innerHTML=items.map((it,k)=>'<div class="im" data-id="'+esc(it.id)+'">'+(k===0?'<span class="first">代表</span>':'')+'<button data-rm aria-label="外す">✕</button></div>').join('')+'<button class="addimg" id="eAddImg"><b>＋</b>画像を追加</button>';
+$('eAddImg').onclick=()=>$('eFile').click();
+for(const it of items){const el=I.querySelector('.im[data-id="'+CSS.escape(it.id)+'"]');const u=it.url||await imgURL(it.id);if(u&&el)el.style.backgroundImage='url("'+u+'")'}}
+$('eImgs').onclick=ev=>{const b=ev.target.closest('[data-rm]');if(!b)return;const id=b.parentElement.dataset.id;
+if(draft.imgs.includes(id)){draft.imgs=draft.imgs.filter(x=>x!==id);removedImgs.push(id)}else{const p=pendingImgs.find(x=>x.id===id);if(p)URL.revokeObjectURL(p.url);pendingImgs=pendingImgs.filter(x=>x.id!==id)}drawImgs()};
+$('eFile').onchange=async ev=>{const fs=[...ev.target.files];ev.target.value='';if(!fs.length)return;toast('画像を縮めています…');
+for(const f of fs){try{const r=await shrink(f,400);pendingImgs.push({id:uid(),blob:r.blob,type:r.blob.type,w:r.w,h:r.h,url:URL.createObjectURL(r.blob)})}catch(e){toast('読めない画像がありました')}}
+drawImgs();toast(fs.length+'枚を追加（保存で確定）')};
+// resize to max 400px wide, WebP if the browser can encode it, JPEG otherwise
+function loadImg(file){return new Promise((res,rej)=>{const u=URL.createObjectURL(file);const im=new Image();im.onload=()=>{res(im);setTimeout(()=>URL.revokeObjectURL(u),0)};im.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('image'))};im.src=u})}
+const toBlob=(c,t,q)=>new Promise(r=>c.toBlob(r,t,q));
+async function shrink(file,maxW){const im=await loadImg(file);const sc=Math.min(1,maxW/im.naturalWidth);const w=Math.max(1,Math.round(im.naturalWidth*sc)),h=Math.max(1,Math.round(im.naturalHeight*sc));
+const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#fffdf8';x.fillRect(0,0,w,h);x.imageSmoothingQuality='high';x.drawImage(im,0,0,w,h);
+let b=await toBlob(c,'image/webp',0.8);if(!b||b.type!=='image/webp')b=await toBlob(c,'image/jpeg',0.82);if(!b)throw new Error('encode');return{blob:b,w,h}}
+$('eCancel').onclick=()=>{pendingImgs.forEach(p=>URL.revokeObjectURL(p.url));pendingImgs=[];closeSheet('sEdit')};
+$('eSave').onclick=async()=>{const d=draft;d.name=$('eName').value.trim();d.extra=$('eExtra').value.trim();d.ver=$('eVer').value;d.desc=$('eDesc').value.trim();d.link=$('eLink').value.trim();d.memo=$('eMemo').value.trim();d.fav=$('eFav').checked;
+d.parts=d.parts.filter(p=>String(p.code).trim());
+if(!d.name&&!d.parts.length){toast('名前かコードを入れてください');return}
+if(!d.name)d.name=d.parts.map(p=>p.code).join(' + ');
+const now=Date.now();if(!d.created)d.created=now;d.updated=now;
+const add=pendingImgs.map(p=>({id:p.id,entryId:d.id,blob:p.blob,type:p.type,w:p.w,h:p.h,link:'',created:now}));d.imgs=[...d.imgs,...add.map(a=>a.id)];
+try{await dbTx(['entries','images'],t=>{const E=t.objectStore('entries'),I=t.objectStore('images');add.forEach(a=>I.put(a));removedImgs.forEach(id=>I.delete(id));E.put(d)})}catch(e){toast('保存できませんでした：'+(e&&e.message||e));return}
+pendingImgs.forEach(p=>URL.revokeObjectURL(p.url));removedImgs.forEach(dropURL);pendingImgs=[];removedImgs=[];
+await touched();await load();closeSheet('sEdit');if($('sDetail').classList.contains('open'))openDetail(d.id);toast('保存しました')};
+async function delEntry(id){const e=entries.find(x=>x.id===id);if(!e||!confirm('「'+(e.name||'')+'」を削除しますか？画像も消えます。'))return;
+await dbTx(['entries','images'],t=>{t.objectStore('entries').delete(id);(e.imgs||[]).forEach(i=>t.objectStore('images').delete(i))});(e.imgs||[]).forEach(dropURL);
+await touched();closeSheet('sEdit');closeSheet('sDetail');await load();toast('削除しました')}
+$('bAdd').onclick=()=>openEdit(null);
+
+/* ---------- backup ---------- */
+const blobToDataURL=b=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsDataURL(b)});
+function dataURLToBlob(u){const m=/^data:([^;,]+)?(;base64)?,(.*)$/s.exec(u);if(!m)throw new Error('画像データが壊れています');const bin=m[2]?atob(m[3]):decodeURIComponent(m[3]);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return new Blob([a],{type:m[1]||'image/jpeg'})}
+async function buildExport(){const es=await dbAll('entries'),is=await dbAll('images');const imgs=[];
+for(const r of is)imgs.push({id:r.id,entryId:r.entryId,type:r.type||r.blob.type,w:r.w,h:r.h,link:r.link||'',created:r.created,data:await blobToDataURL(r.blob)});
+return{app:'mj-profiles',format:1,exported:new Date().toISOString(),entries:es,images:imgs}}
+async function exportAll(){toast('書き出しています…');const data=await buildExport();const json=JSON.stringify(data);
+const d=new Date(),name='profile-chou-'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'-'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')+'.json';
+const file=new File([json],name,{type:'application/json'});let done=false;
+if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:name});done=true}catch(e){if(e&&e.name==='AbortError'){toast('キャンセルしました');return}}}
+if(!done){const u=URL.createObjectURL(file);const a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
+await setMeta('lastExport',Date.now());await setMeta('lastExportName',name);banner();bakInfo();toast(data.entries.length+'件・画像'+data.images.length+'枚を書き出しました')}
+async function importData(obj,mode){if(!obj||obj.app!=='mj-profiles'||!Array.isArray(obj.entries))throw new Error('プロファイル帖のバックアップファイルではないようです');
+const imgs=(obj.images||[]).map(r=>({id:String(r.id),entryId:String(r.entryId),blob:dataURLToBlob(r.data),type:r.type,w:r.w,h:r.h,link:r.link||'',created:r.created||Date.now()}));
+const clean=e=>({id:String(e.id||uid()),name:String(e.name||''),parts:(Array.isArray(e.parts)?e.parts:[]).map(p=>({kind:p.kind==='sref'?'sref':'p',code:String(p.code||''),w:Number(p.w)>=0?Number(p.w):1})),extra:String(e.extra||''),ver:String(e.ver||''),desc:String(e.desc||''),tags:(Array.isArray(e.tags)?e.tags:[]).map(String),fav:!!e.fav,link:String(e.link||''),memo:String(e.memo||''),imgs:(Array.isArray(e.imgs)?e.imgs:[]).map(String),created:Number(e.created)||Date.now(),updated:Number(e.updated)||Date.now()});
+const inc=obj.entries.map(clean);let added=0,updated=0,kept=0;
+if(mode==='replace'){await dbTx(['entries','images'],t=>{const E=t.objectStore('entries'),I=t.objectStore('images');E.clear();I.clear();inc.forEach(e=>E.put(e));imgs.forEach(i=>I.put(i))});urlCache.forEach(u=>URL.revokeObjectURL(u));urlCache.clear();added=inc.length}
+else{const cur=new Map((await dbAll('entries')).map(e=>[e.id,e]));const haveImg=new Set((await dbAll('images')).map(i=>i.id));const outE=[];
+for(const e of inc){const c=cur.get(e.id);if(!c){outE.push(e);added++}else{const base=e.updated>c.updated?e:c;if(base===e)updated++;else kept++;outE.push(Object.assign({},base,{imgs:[...new Set([...(base.imgs||[]),...(base===e?c.imgs:e.imgs)||[]])]}))}}
+await dbTx(['entries','images'],t=>{const E=t.objectStore('entries'),I=t.objectStore('images');outE.forEach(e=>E.put(e));imgs.forEach(i=>{if(!haveImg.has(i.id))I.put(i)})})}
+await touched();await load();return{added,updated,kept,images:imgs.length}}
+$('bFile').onchange=async ev=>{const f=ev.target.files[0];ev.target.value='';if(!f)return;const mode=document.querySelector('input[name=imode]:checked').value;
+if(mode==='replace'&&!confirm('今のデータを全部消して、ファイルの中身に入れ替えます。よろしいですか？'))return;
+try{const obj=JSON.parse(await f.text());const r=await importData(obj,mode);bakInfo();toast(mode==='replace'?r.added+'件に入れ替えました':'追加'+r.added+'・更新'+r.updated+'・そのまま'+r.kept)}catch(e){alert('読み込めませんでした：'+(e&&e.message||e))}};
+async function bakInfo(){const le=await meta('lastExport'),ln=await meta('lastExportName');const is=await dbAll('images');let bytes=0;is.forEach(i=>bytes+=i.blob.size||0);
+let quota='';if(navigator.storage&&navigator.storage.estimate){try{const s=await navigator.storage.estimate();quota='\nブラウザの使用量：約'+(s.usage/1048576).toFixed(1)+'MB'}catch(e){}}
+let pers='';if(navigator.storage&&navigator.storage.persisted){try{pers=(await navigator.storage.persisted())?'\n保存の保護：オン':'\n保存の保護：オフ（ホーム画面から使うと消えにくくなります）'}catch(e){}}
+$('bInfo').innerHTML='<span class="k">いまのデータ</span>'+esc(entries.length+'件・画像'+is.length+'枚（約'+Math.round(bytes/1024)+'KB）'+quota+pers+'\n前回のバックアップ：'+(le?fmtD(le)+(ln?'\n（'+ln+'）':''):'まだありません'))}
+$('bBak').onclick=()=>{bakInfo();openSheet('sBak')};$('bClose').onclick=()=>closeSheet('sBak');
+$('bExport').onclick=exportAll;$('bImport').onclick=()=>$('bFile').click();
+
+/* ---------- start ---------- */
+(async()=>{await openDB();const s=await meta('sort');if(s)$('sort').value=s;await load()})();
+if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
+window.__mjp={paramStr,parseParams,importData,buildExport};
+</script></body></html>
